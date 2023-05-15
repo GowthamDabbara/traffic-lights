@@ -9,13 +9,13 @@ const TrafficManager = () => {
 	const refCount = useRef(8);
 	const pause = useRef(0);
 
-	useEffect(() => {
+	const startLights = () => {
 		setCurrentLight({
 			red: 1,
 			orange: 0,
 			green: 0,
 		});
-		let id = setInterval(() => {
+		let intervalID = setInterval(() => {
 			if (pause.current === 0) {
 				refCount.current = refCount.current - 1;
 			}
@@ -50,8 +50,12 @@ const TrafficManager = () => {
 		}, 1000);
 
 		return () => {
-			clearInterval(id);
+			clearInterval(intervalID);
 		};
+	};
+
+	useEffect(() => {
+		startLights();
 	}, []);
 
 	return (
@@ -60,15 +64,15 @@ const TrafficManager = () => {
 				<LightsWrapper>
 					<TrafficLight
 						color={"red"}
-						isActive={currentLight.red}
+						isactive={currentLight.red}
 					></TrafficLight>
 					<TrafficLight
 						color={"orange"}
-						isActive={currentLight.orange}
+						isactive={currentLight.orange}
 					></TrafficLight>
 					<TrafficLight
 						color={"green"}
-						isActive={currentLight.green}
+						isactive={currentLight.green}
 					></TrafficLight>
 				</LightsWrapper>
 				<TrafficSign countdown={countdown} />

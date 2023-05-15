@@ -6,5 +6,5 @@ export const Bulb = styled.div`
 	border: 1px solid black;
 	border-radius: 100%;
 	background-color: ${(props) =>
-		props.isActive ? props.activeColor : props.baseColor};
+		props.isactive ? props.activecolor : props.basecolor};
 `;
