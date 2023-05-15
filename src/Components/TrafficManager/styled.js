@@ -18,8 +18,8 @@ export const LightsWrapper = styled.div`
 
 export const ButtonsWrapper = styled.div`
 	display: flex;
-	width: 120px;
-	height: 100px;
+	width: 150px;
+	height: 50px;
 	justify-content: space-between;
 	align-items: center;
 	margin: auto;

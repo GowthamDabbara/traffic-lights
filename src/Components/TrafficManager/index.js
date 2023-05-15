@@ -4,58 +4,140 @@ import TrafficSign from "../TrafficSign";
 import { MainWrapper, LightsWrapper, ButtonsWrapper } from "./styled";
 
 const TrafficManager = () => {
-	const [currentLight, setCurrentLight] = useState({});
-	const [countdown, setCountdown] = useState(8);
-	const refCount = useRef(8);
-	const pause = useRef(0);
+	const ORANGE_START_TIME = -4;
+	const ORANGE_END_TIME = -6;
+	const GREEN_START_TIME = 0;
+	const RED_START_TIME = 8;
 
-	const startLights = () => {
-		setCurrentLight({
-			red: 1,
-			orange: 0,
-			green: 0,
-		});
-		let intervalID = setInterval(() => {
-			if (pause.current === 0) {
-				refCount.current = refCount.current - 1;
-			}
-			if (pause.current === 0 && refCount.current > 0) {
-				setCountdown((oldCountdown) => oldCountdown - 1);
-			}
-			switch (refCount.current) {
-				case 0:
-					setCountdown("");
-					setCurrentLight({
+	const [allCurrentLights, setAllCurrentLights] = useState({});
+	const [countdown, setCountdown] = useState(RED_START_TIME);
+	const refCount = useRef(RED_START_TIME);
+	const currentLight = useRef("red");
+	const intervalID = useRef();
+
+	const skipLights = (forward) => {
+		if (forward) {
+			switch (currentLight.current) {
+				case "red":
+					setAllCurrentLights({
 						red: 0,
 						orange: 0,
 						green: 1,
 					});
+					setCountdown("");
+					refCount.current = GREEN_START_TIME;
+					currentLight.current = "green";
 					break;
-				case -4:
-					setCurrentLight({
-						red: 0,
-						orange: 1,
-						green: 0,
-					});
-					break;
-				case -6:
-					refCount.current = 8;
-					setCountdown(8);
-					setCurrentLight({
+				case "orange":
+					setAllCurrentLights({
 						red: 1,
 						orange: 0,
 						green: 0,
 					});
+					setCountdown(RED_START_TIME);
+					refCount.current = RED_START_TIME;
+					currentLight.current = "red";
+					break;
+				case "green":
+					setAllCurrentLights({
+						red: 0,
+						orange: 1,
+						green: 0,
+					});
+					refCount.current = ORANGE_START_TIME;
+					currentLight.current = "orange";
+					break;
 			}
-		}, 1000);
+		} else {
+			switch (currentLight.current) {
+				case "orange":
+					setAllCurrentLights({
+						red: 0,
+						orange: 0,
+						green: 1,
+					});
+					setCountdown("");
+					refCount.current = GREEN_START_TIME;
+					currentLight.current = "green";
+					break;
+				case "green":
+					setAllCurrentLights({
+						red: 1,
+						orange: 0,
+						green: 0,
+					});
+					setCountdown(RED_START_TIME);
+					refCount.current = RED_START_TIME;
+					currentLight.current = "red";
+					break;
+				case "red":
+					setAllCurrentLights({
+						red: 0,
+						orange: 1,
+						green: 0,
+					});
+					setCountdown("");
+					refCount.current = ORANGE_START_TIME;
+					currentLight.current = "orange";
+					break;
+			}
+		}
+		startLights();
+	};
 
-		return () => {
-			clearInterval(intervalID);
-		};
+	const switchLights = () => {
+		switch (refCount.current) {
+			case GREEN_START_TIME:
+				currentLight.current = "green";
+				setCountdown("");
+				setAllCurrentLights({
+					red: 0,
+					orange: 0,
+					green: 1,
+				});
+				break;
+			case ORANGE_START_TIME:
+				currentLight.current = "orange";
+				setAllCurrentLights({
+					red: 0,
+					orange: 1,
+					green: 0,
+				});
+				break;
+			case ORANGE_END_TIME:
+				refCount.current = RED_START_TIME;
+				currentLight.current = "red";
+				setCountdown(RED_START_TIME);
+				setAllCurrentLights({
+					red: 1,
+					orange: 0,
+					green: 0,
+				});
+		}
+	};
+
+	const startLights = () => {
+		clearInterval(intervalID.current);
+		intervalID.current = setInterval(() => {
+			if (refCount.current > 0) {
+				setCountdown((oldCountdown) => oldCountdown - 1);
+			}
+			refCount.current = refCount.current - 1;
+			switchLights();
+		}, 1000);
+	};
+
+	const init = () => {
+		setAllCurrentLights({
+			red: 1,
+			orange: 0,
+			green: 0,
+		});
+		startLights();
 	};
 
 	useEffect(() => {
-		startLights();
+		init();
 	}, []);
 
 	return (
@@ -64,15 +146,15 @@ const TrafficManager = () => {
 				<LightsWrapper>
 					<TrafficLight
 						color={"red"}
-						isactive={currentLight.red}
+						isactive={allCurrentLights.red}
 					></TrafficLight>
 					<TrafficLight
 						color={"orange"}
-						isactive={currentLight.orange}
+						isactive={allCurrentLights.orange}
 					></TrafficLight>
 					<TrafficLight
 						color={"green"}
-						isactive={currentLight.green}
+						isactive={allCurrentLights.green}
 					></TrafficLight>
 				</LightsWrapper>
 				<TrafficSign countdown={countdown} />
@@ -80,18 +162,33 @@ const TrafficManager = () => {
 			<ButtonsWrapper>
 				<button
 					onClick={() => {
-						console.log("heelos");
-						pause.current = 1;
+						clearInterval(intervalID.current);
 					}}
 				>
 					Pause
 				</button>
 				<button
 					onClick={() => {
-						pause.current = 0;
+						startLights();
 					}}
 				>
 					Resume
+				</button>
+			</ButtonsWrapper>
+			<ButtonsWrapper>
+				<button
+					onClick={() => {
+						skipLights(false);
+					}}
+				>
+					Backward
+				</button>
+				<button
+					onClick={() => {
+						skipLights(true);
+					}}
+				>
+					Forward
 				</button>
 			</ButtonsWrapper>
 		</>
