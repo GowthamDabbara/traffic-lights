@@ -1,25 +1,13 @@
-import logo from './logo.svg';
-import './App.css';
+import TrafficLight from "./Components/TrafficLight";
+import TrafficManager from "./Components/TrafficManager";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<div>
+			<TrafficManager></TrafficManager>
+			{/* <TrafficLight color={"orange"} isActive={0}></TrafficLight> */}
+		</div>
+	);
 }
 
 export default App;
