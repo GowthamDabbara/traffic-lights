@@ -13,6 +13,7 @@ const TrafficManager = () => {
 	const [countdown, setCountdown] = useState(RED_START_TIME);
 	const refCount = useRef(RED_START_TIME);
 	const currentLight = useRef("red");
+	const pause = useRef(0);
 	const intervalID = useRef();
 
 	const skipLights = (forward) => {
@@ -82,7 +83,9 @@ const TrafficManager = () => {
 					break;
 			}
 		}
-		startLights();
+		if (pause.current === 0) {
+			startLights();
+		}
 	};
 
 	const switchLights = () => {
@@ -162,13 +165,15 @@ const TrafficManager = () => {
 			<ButtonsWrapper>
 				<button
 					onClick={() => {
+						pause.current = 1;
 						clearInterval(intervalID.current);
 					}}
 				>
-					Pause
+					pause
 				</button>
 				<button
 					onClick={() => {
+						pause.current = 0;
 						startLights();
 					}}
 				>
