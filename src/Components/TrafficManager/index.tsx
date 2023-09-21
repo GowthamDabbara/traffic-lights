@@ -228,6 +228,10 @@ const TrafficManager = () => {
 		init();
 	}, []);
 
+	// if (!countDown) {
+	// 	return <></>;
+	// }
+
 	return (
 		<>
 			<MainWrapper>
@@ -245,7 +249,7 @@ const TrafficManager = () => {
 						isactive={allCurrentLights.green}
 					></TrafficLight>
 				</LightsWrapper>
-				{countDown && <TrafficSign countdown={countDown} />}
+				<TrafficSign countdown={countDown} />
 			</MainWrapper>
 			<ButtonsWrapper>
 				<button
