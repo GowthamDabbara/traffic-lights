@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Bulb } from "./styled";
 
-const TrafficLight = ({ color, isactive }) => {
+interface LightProps {
+	color: string;
+	isactive: number;
+}
+
+const TrafficLight: React.FC<LightProps> = ({ color, isactive }) => {
 	const basecolor = useRef("");
 	const activecolor = useRef("");
 

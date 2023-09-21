@@ -21,7 +21,7 @@ const TrafficManager = () => {
 	const [current, send] = useMachine(TrafficMachine);
 	const { allCurrentLights, countDown } = current.context;
 
-	const skipLights = (forward) => {
+	const skipLights = (forward: boolean) => {
 		if (forward) {
 			switch (currentLight.current) {
 				case "red":
@@ -31,7 +31,7 @@ const TrafficManager = () => {
 					// 	green: 1,
 					// });
 					// setCountdown("");
-					send("TIMER", { countDown: "" });
+					send("TIMER", { cntDown: null });
 					send("SELECT", {
 						allCurrentLights: {
 							red: 0,
@@ -49,7 +49,7 @@ const TrafficManager = () => {
 					// 	green: 0,
 					// });
 					// setCountdown(RED_START_TIME);
-					send("TIMER", { countDown: "" });
+					send("TIMER", { cntDown: null });
 					send("SELECT", {
 						allCurrentLights: {
 							red: 1,
@@ -66,7 +66,7 @@ const TrafficManager = () => {
 					// 	orange: 1,
 					// 	green: 0,
 					// });
-					// send("TIMER", { countDown: "" });
+					// send("TIMER", { cntDown: null });
 					send("SELECT", {
 						allCurrentLights: {
 							red: 0,
@@ -94,7 +94,7 @@ const TrafficManager = () => {
 							green: 1,
 						},
 					});
-					send("TIMER", { countDown: "" });
+					send("TIMER", { cntDown: null });
 
 					refCount.current = GREEN_START_TIME;
 					currentLight.current = "green";
@@ -114,7 +114,7 @@ const TrafficManager = () => {
 							green: 0,
 						},
 					});
-					send("TIMER", { countDown: RED_START_TIME });
+					send("TIMER", { cntDown: RED_START_TIME });
 
 					refCount.current = RED_START_TIME;
 					currentLight.current = "red";
@@ -133,7 +133,7 @@ const TrafficManager = () => {
 							green: 0,
 						},
 					});
-					send("TIMER", { countDown: "" });
+					send("TIMER", { cntDown: null });
 
 					refCount.current = ORANGE_START_TIME;
 					currentLight.current = "orange";
@@ -149,7 +149,7 @@ const TrafficManager = () => {
 		switch (refCount.current) {
 			case GREEN_START_TIME:
 				currentLight.current = "green";
-				send("TIMER", { countDown: "" });
+				send("TIMER", { cntDown: null });
 				send("SELECT", {
 					allCurrentLights: {
 						red: 0,
@@ -183,7 +183,7 @@ const TrafficManager = () => {
 				refCount.current = RED_START_TIME;
 				currentLight.current = "red";
 
-				send("TIMER", { countDown: RED_START_TIME });
+				send("TIMER", { cntDown: RED_START_TIME });
 				// setCountdown(RED_START_TIME);
 				send("SELECT", {
 					allCurrentLights: {
@@ -202,23 +202,16 @@ const TrafficManager = () => {
 
 	const startLights = () => {
 		clearInterval(intervalID.current);
-		// if (typeof countDown !== Number) {
-		// 	throw new Error("type");
-		// }
-		let temp: number | string = countDown;
-		if (typeof temp === "string") {
+		if (!countDown) {
 			throw new Error("temp is not a number");
 		}
-		if (!isNaN(temp)) {
-			intervalID.current = setInterval(() => {
-				if (refCount.current > 0) {
-					// setCountdown((oldCountdown) => oldCountdown - 1);
-					send("TIMER", { countDown: temp - 1 });
-				}
-				refCount.current = refCount.current - 1;
-				switchLights();
-			}, 1000);
-		}
+		intervalID.current = setInterval(() => {
+			if (refCount.current > 0) {
+				send("TIMER", { cntDown: countDown - 1 });
+			}
+			refCount.current = refCount.current - 1;
+			switchLights();
+		}, 1000);
 	};
 
 	const init = () => {
@@ -252,7 +245,7 @@ const TrafficManager = () => {
 						isactive={allCurrentLights.green}
 					></TrafficLight>
 				</LightsWrapper>
-				<TrafficSign countdown={countDown} />
+				{countDown && <TrafficSign countdown={countDown} />}
 			</MainWrapper>
 			<ButtonsWrapper>
 				<button

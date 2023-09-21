@@ -1,6 +1,12 @@
 import styled from "styled-components";
 
-export const Bulb = styled.div`
+interface BulbProps {
+    isactive: number;
+    activecolor: string;
+    basecolor: string;
+}
+
+export const Bulb = styled.div<BulbProps>`
 	width: 80px;
 	height: 80px;
 	border: 1px solid black;

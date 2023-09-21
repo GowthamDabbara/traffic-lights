@@ -8,7 +8,7 @@ interface Colors {
 
 interface Context {
 	allCurrentLights: Colors;
-	countDown: number | string;
+	countDown: number | null;
 }
 
 export const TrafficMachine = createMachine<Context>({
